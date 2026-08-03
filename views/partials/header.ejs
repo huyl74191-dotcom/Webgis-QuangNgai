@@ -1,0 +1,88 @@
+<%- include('head') %>
+
+<!-- ================= HEADER ================= -->
+
+<header>
+
+    <!-- Thanh tiêu đề -->
+<div class="topbar text-center">
+    <h1>
+        HỆ THỐNG WEBGIS QUẢN LÝ DỮ LIỆU QUAN TRẮC CHẤT LƯỢNG
+        NƯỚC MẶT TRÊN ĐỊA BÀN TỈNH QUẢNG NGÃI
+    </h1>
+</div>
+    <!-- Thanh menu -->
+    <nav class="navbar">
+
+        <div class="nav-container">
+
+            <!-- Logo -->
+            <a href="/" class="navbar-brand">
+                WebGIS
+            </a>
+
+            <!-- Nút menu mobile -->
+            <button
+                class="navbar-toggler"
+                id="navToggler"
+                aria-label="Mở menu"
+                aria-expanded="false">
+
+                <span></span>
+                <span></span>
+                <span></span>
+
+            </button>
+
+            <!-- Menu -->
+            <ul class="nav-list" id="navList">
+
+                <li>
+                    <a href="/"
+                       class="<%= activePage === 'trangchu' ? 'active' : '' %>">
+                        Trang chủ
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/map"
+                       class="<%= activePage === 'map' ? 'active' : '' %>">
+                        Bản đồ
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/monitoring"
+                       class="<%= activePage === 'monitoring' ? 'active' : '' %>">
+                        Quan trắc
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/warning"
+                       class="<%= activePage === 'warning' ? 'active' : '' %>">
+                        Cảnh báo
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/statistics"
+                       class="<%= activePage === 'statistics' ? 'active' : '' %>">
+                        Thống kê
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/report"
+                       class="<%= activePage === 'report' ? 'active' : '' %>">
+                        Báo cáo
+                    </a>
+                </li>
+
+            </ul>
+
+        </div>
+
+    </nav>
+
+</header>

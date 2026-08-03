@@ -1,0 +1,16 @@
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Menu -->
+    <script src="/js/nav-toggle.js"></script>
+
+    <!-- JavaScript theo từng trang -->
+    <% if (typeof pageScript !== 'undefined') { %>
+        <script src="/js/<%= pageScript %>"></script>
+    <% } %>
+
+</body>
+</html>

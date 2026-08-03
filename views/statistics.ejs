@@ -1,0 +1,110 @@
+<%- include('partials/header') %>
+
+<main>
+
+<div class="container-fluid mt-3">
+
+    <h5 class="mb-3">THỐNG KÊ HỆ THỐNG QUAN TRẮC NƯỚC MẶT</h5>
+
+    <div id="statsAlert"></div>
+
+    <!-- ===== HÀNG 1: SỐ LIỆU NHANH VỀ ĐIỂM QUAN TRẮC ===== -->
+    <div class="stat-summary">
+        <div class="stat-box">
+            <div class="stat-number" id="statTotal">--</div>
+            <div class="stat-label">Tổng số điểm quan trắc</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number" id="statDistricts">--</div>
+            <div class="stat-label">Số huyện có điểm quan trắc</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number" id="statWaterTypes">--</div>
+            <div class="stat-label">Số loại nguồn nước</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number" id="statTopDistrict" style="font-size:20px;">--</div>
+            <div class="stat-label">Huyện có nhiều điểm nhất</div>
+        </div>
+    </div>
+
+    <!-- ===== HÀNG 2: 2 BIỂU ĐỒ PHÂN BỐ ĐIỂM ===== -->
+    <div class="charts-grid">
+        <div class="chart-card">
+            <h3>Số điểm quan trắc theo huyện</h3>
+            <div class="chart-wrap">
+                <canvas id="districtChart"></canvas>
+            </div>
+        </div>
+        <div class="chart-card">
+            <h3>Tỉ lệ theo loại nguồn nước</h3>
+            <div class="chart-wrap">
+                <canvas id="waterTypeChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== HÀNG 3: BẢNG SỐ ĐIỂM THEO HUYỆN ===== -->
+    <div class="stat-table">
+        <h3 style="color:#0066cc; margin-bottom:14px; font-size:18px;">Chi tiết số điểm theo huyện</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Huyện</th>
+                    <th>Số điểm</th>
+                    <th>Tỉ lệ</th>
+                </tr>
+            </thead>
+            <tbody id="districtTableBody">
+                <tr><td colspan="3" class="text-center text-muted py-3">Đang tải...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ===== HÀNG 4: TRUNG BÌNH CHẤT LƯỢNG NƯỚC TOÀN TỈNH (dữ liệu thật từ Neon) ===== -->
+    <h5 class="mt-4 mb-3">CHẤT LƯỢNG NƯỚC TRUNG BÌNH TOÀN TỈNH (theo dữ liệu quan trắc thực tế)</h5>
+
+    <div class="stat-summary">
+        <div class="stat-box">
+            <div class="stat-number" id="avgPh">--</div>
+            <div class="stat-label">pH trung bình</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number" id="avgDo">--</div>
+            <div class="stat-label">DO trung bình (mg/l)</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number" id="avgBod">--</div>
+            <div class="stat-label">BOD5 trung bình (mg/l)</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number" id="avgCod">--</div>
+            <div class="stat-label">COD trung bình (mg/l)</div>
+        </div>
+    </div>
+
+    <!-- ===== HÀNG 5: BẢNG TRUNG BÌNH pH THEO TỪNG ĐIỂM ===== -->
+    <div class="stat-table mb-4">
+        <h3 style="color:#0066cc; margin-bottom:14px; font-size:18px;">Trung bình pH theo từng điểm quan trắc</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Ký hiệu mẫu</th>
+                    <th>Số lần đo</th>
+                    <th>pH trung bình</th>
+                </tr>
+            </thead>
+            <tbody id="pointTableBody">
+                <tr><td colspan="3" class="text-center text-muted py-3">Đang tải...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+</main>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<%- include('partials/footer') %>

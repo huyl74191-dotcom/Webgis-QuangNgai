@@ -1,0 +1,67 @@
+<%- include('partials/header') %>
+
+<main>
+
+    <!-- ================= HERO ================= -->
+
+    <section class="hero">
+
+        <p style="font-size:14px; letter-spacing:1px; text-transform:uppercase; opacity:.85; margin-bottom:10px;">
+            Sở Tài nguyên và Môi trường tỉnh Quảng Ngãi
+        </p>
+
+        <h1>
+            HỆ THỐNG WEBGIS QUẢN LÝ DỮ LIỆU QUAN TRẮC CHẤT LƯỢNG
+            NƯỚC MẶT TRÊN ĐỊA BÀN TỈNH QUẢNG NGÃI
+        </h1>
+
+        <p>
+            Theo dõi chất lượng nước • Hiển thị bản đồ GIS •
+            Cảnh báo vượt ngưỡng • Thống kê dữ liệu
+        </p>
+
+    </section>
+
+    <!-- ================= CÁC CHỨC NĂNG ================= -->
+
+    <section class="feature-cards">
+
+        <div class="feature-card">
+            <h2>🗺️ Bản đồ GIS</h2>
+            <p>Hiển thị các vị trí quan trắc trên bản đồ.</p>
+        </div>
+
+        <div class="feature-card">
+            <h2>💧 Quan trắc</h2>
+            <p>Quản lý dữ liệu chất lượng nước.</p>
+        </div>
+
+        <div class="feature-card">
+            <h2>⚠️ Cảnh báo</h2>
+            <p>Tự động cảnh báo khi vượt QCVN.</p>
+        </div>
+
+        <div class="feature-card">
+            <h2>📈 Thống kê</h2>
+            <p>Biểu đồ và báo cáo.</p>
+        </div>
+
+    </section>
+
+    <!-- ================= BẢN ĐỒ ================= -->
+
+    <section class="map-section">
+
+        <h2>Bản đồ quan trắc nước mặt tỉnh Quảng Ngãi</h2>
+
+        <div id="map"></div>
+
+        <div id="coordinates" class="coordinates-box">
+            Kinh độ: -- | Vĩ độ: --
+        </div>
+
+    </section>
+
+</main>
+
+<%- include('partials/footer') %>

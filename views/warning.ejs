@@ -1,0 +1,94 @@
+<%- include('partials/header') %>
+
+<main>
+
+<div class="container-fluid mt-3">
+
+    <div class="row">
+
+        <!-- PANEL THÔNG TIN QUY CHUẨN -->
+        <div class="col-lg-3">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header bg-danger text-white">
+                    <strong>NGƯỠNG CẢNH BÁO (QCVN 08-MT:2015/BTNMT, cột B1)</strong>
+                </div>
+
+                <div class="card-body">
+                    <table class="table table-sm mb-0">
+                        <tbody>
+                            <tr><td>pH</td><td class="text-end">5,5 – 9</td></tr>
+                            <tr><td>BOD5</td><td class="text-end">≤ 15 mg/l</td></tr>
+                            <tr><td>COD</td><td class="text-end">≤ 30 mg/l</td></tr>
+                            <tr><td>DO</td><td class="text-end">≥ 4 mg/l</td></tr>
+                            <tr><td>TSS</td><td class="text-end">≤ 50 mg/l</td></tr>
+                            <tr><td>Coliform</td><td class="text-end">≤ 7.500 MPN/100ml</td></tr>
+                            <tr><td>Amoni</td><td class="text-end">≤ 0,9 mg/l</td></tr>
+                            <tr><td>Clorua</td><td class="text-end">≤ 350 mg/l</td></tr>
+                            <tr><td>Nitrit (NO2-)</td><td class="text-end">≤ 0,05 mg/l</td></tr>
+                            <tr><td>Sắt (Fe)</td><td class="text-end">≤ 1,5 mg/l</td></tr>
+                            <tr><td>Tổng dầu mỡ</td><td class="text-end">≤ 1 mg/l</td></tr>
+                            <tr><td>E.coli</td><td class="text-end">≤ 100 MPN/100ml</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <div class="alert alert-warning mt-3">
+                <h6 class="mb-2">Thống kê nhanh</h6>
+                <hr>
+                <b>Tổng số bản ghi:</b> <span id="totalChecked">0</span><br>
+                <b>Số bản ghi vượt ngưỡng:</b>
+                <span id="totalExceeded" class="text-danger fw-bold">0</span>
+            </div>
+
+        </div>
+
+        <!-- BẢNG CẢNH BÁO -->
+        <div class="col-lg-9">
+
+            <h5 class="mb-3">
+                CẢNH BÁO CHẤT LƯỢNG NƯỚC VƯỢT NGƯỠNG QCVN 08-MT:2015/BTNMT
+            </h5>
+
+            <div id="warningAlert"></div>
+
+            <div class="card shadow-sm">
+
+                <div class="card-body p-0">
+
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Ký hiệu mẫu</th>
+                                    <th>Ngày quan trắc</th>
+                                    <th>Trạng thái</th>
+                                    <th>Chỉ tiêu vượt ngưỡng</th>
+                                </tr>
+                            </thead>
+                            <tbody id="warningTableBody">
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted py-4">
+                                        Đang tải dữ liệu...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</main>
+
+<%- include('partials/footer') %>

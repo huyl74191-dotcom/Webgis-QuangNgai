@@ -1,0 +1,387 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:#f4f7fa;
+}
+
+/* ============================================
+   HÀNG 1: TOPBAR - tiêu đề hệ thống
+   Giữ nguyên nền xanh #0066cc như header cũ
+============================================ *
+
+/* ===== TOPBAR ===== */
+.topbar {
+  background: linear-gradient(90deg, #4e73df, #6f8dfd);
+  color: white;
+  padding: 15px;
+  text-align: center;
+}
+
+/* ===== NAVBAR ===== */
+.navbar {
+  background: #1f2a40;
+}
+
+.navbar-brand {
+  color: white;
+  font-weight: bold;
+}
+
+.nav-list a {
+  color: white;
+  text-decoration: none;
+}
+
+.nav-list a.active {
+  font-weight: bold;
+  border-bottom: 2px solid white;
+}
+
+/* ===== CARD TOOL ===== */
+.card {
+  border-radius: 12px;
+}
+
+/* ===== HEADER TOOL ===== */
+.card-header {
+  text-align: center;
+  font-weight: bold;
+}
+
+/* ===== MAP ===== */
+#map {
+  height: 500px;
+  width: 100%;
+}
+
+/* ============================================
+   HÀNG 2: NAVBAR - thanh điều hướng kiểu tối
+   (giống navbar-dark bg-dark bên trang map.html)
+============================================ */
+.navbar{
+    background:#212529;      /* nền tối, giống navbar-dark của Bootstrap */
+    padding:0 30px;
+}
+
+.nav-container{
+    max-width:1200px;
+    margin:0 auto;
+    display:flex;
+    justify-content:space-between;  /* brand trái, phần còn lại phải */
+    align-items:center;
+    height:60px;
+    position:relative;
+}
+
+.navbar-brand{
+    color:white;
+    font-size:22px;
+    font-weight:bold;
+    text-decoration:none;
+}
+
+/* Icon 3 gạch (hamburger) - mặc định ẩn, chỉ hiện khi màn hình nhỏ */
+.navbar-toggler{
+    display:none;
+    flex-direction:column;
+    justify-content:space-between;
+    width:26px;
+    height:20px;
+    background:transparent;
+    border:none;
+    cursor:pointer;
+    padding:0;
+}
+
+.navbar-toggler span{
+    display:block;
+    width:100%;
+    height:3px;
+    background:white;
+    border-radius:2px;
+}
+
+/* Danh sách menu nằm ngang trên desktop */
+.nav-list{
+    display:flex;
+    align-items:center;
+    list-style:none;
+    gap:6px;
+}
+
+.nav-list a{
+    color:white;
+    text-decoration:none;
+    padding:10px 14px;
+    font-size:16px;
+    display:block;
+    border-radius:6px;
+    transition:.3s;
+}
+
+.nav-list a:hover{
+    background:rgba(255,255,255,.12);
+    color:#ffd43b;
+}
+
+.nav-list a.active{
+    background:#0066cc;
+}
+
+/* ============================================
+   RESPONSIVE: dưới 768px -> thu gọn thành menu ẩn/hiện
+============================================ */
+@media(max-width:768px){
+
+    .navbar-toggler{
+        display:flex;   /* hiện icon 3 gạch */
+    }
+
+    .nav-list{
+        position:absolute;
+        top:60px;
+        left:0;
+        right:0;
+        background:#212529;
+        flex-direction:column;
+        align-items:stretch;
+        gap:0;
+        max-height:0;
+        overflow:hidden;
+        transition:max-height .3s ease;
+    }
+
+    .nav-list.open{
+        max-height:500px;   /* xổ menu ra khi bấm icon 3 gạch */
+    }
+
+    .nav-list a{
+        padding:14px 20px;
+        border-radius:0;
+        border-top:1px solid rgba(255,255,255,.08);
+    }
+}
+
+.hero{
+    background:linear-gradient(rgba(0,90,170,.7),rgba(0,90,170,.7)),
+    url("https://images.unsplash.com/photo-1506744038136-46273834b3fb");
+    background-size:cover;
+    background-position:center;
+    color:white;
+    text-align:center;
+    padding:120px 20px;
+}
+
+.hero h1{
+    font-size:42px;
+    margin-bottom:25px;
+}
+
+.hero p{
+    font-size:20px;
+    margin-bottom:35px;
+}
+
+.hero button{
+    background:#00b894;
+    color:white;
+    border:none;
+    padding:15px 35px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:18px;
+}
+
+.hero button:hover{
+    background:#019875;
+}
+
+.feature-cards{
+    width:1200px;
+    max-width:95%;
+    margin:50px auto;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:25px;
+}
+
+.feature-card{
+    background:white;
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0 0 15px rgba(0,0,0,.1);
+    text-align:center;
+    transition:.3s;
+}
+
+.card:hover{
+    transform:translateY(-8px);
+}
+
+.feature-card h2{
+    margin-bottom:15px;
+    color:#0066cc;
+}
+
+.feature-card p{
+    color:#666;
+    line-height:1.6;
+}
+.map-section{
+    width:95%;
+    margin:40px auto;
+}
+
+.map-section h2{
+    text-align:center;
+    margin-bottom:20px;
+    color:#0066cc;
+}
+
+#map{
+    width:100%;
+    height:650px;
+    border-radius:10px;
+    overflow:hidden;
+    box-shadow:0 0 10px rgba(0,0,0,.2);
+}
+
+.coordinates-box{
+    background:white;
+    margin-top:12px;
+    padding:12px 18px;
+    border-radius:8px;
+    box-shadow:0 0 10px rgba(0,0,0,.1);
+    font-size:15px;
+    color:#333;
+    display:inline-block;
+}
+/* ===========================
+   WEBGIS - BẢN ĐỒ
+=========================== */
+
+.form-label{
+    font-weight:600;
+}
+
+.card-header{
+    font-weight:bold;
+}
+
+.card{
+    border:none;
+}
+
+.alert{
+    margin-top:15px;
+}
+
+.container-fluid{
+    margin-top:20px;
+}
+@media(max-width:992px){
+
+    #map{
+        height:65vh;
+        margin-top:20px;
+    }
+
+}
+
+/* ===========================
+   TRANG THỐNG KÊ (statistics.html)
+=========================== */
+
+.stat-summary{
+    max-width:1200px;
+    margin:0 auto 30px;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:20px;
+}
+
+.stat-box{
+    background:white;
+    border-radius:12px;
+    padding:22px;
+    text-align:center;
+    box-shadow:0 0 12px rgba(0,0,0,.08);
+    border-top:4px solid #0066cc;
+}
+
+.stat-box .stat-number{
+    font-size:32px;
+    font-weight:bold;
+    color:#0066cc;
+}
+
+.stat-box .stat-label{
+    color:#666;
+    font-size:14px;
+    margin-top:6px;
+}
+
+.charts-grid{
+    max-width:1200px;
+    margin:0 auto;
+    display:grid;
+    grid-template-columns:1.3fr 1fr;
+    gap:24px;
+}
+
+.chart-card{
+    background:white;
+    border-radius:14px;
+    padding:24px;
+    box-shadow:0 0 12px rgba(0,0,0,.08);
+}
+
+.chart-card h3{
+    color:#0066cc;
+    margin-bottom:18px;
+    font-size:18px;
+}
+
+.chart-card .chart-wrap{
+    position:relative;
+    height:340px;
+}
+
+.stat-table{
+    max-width:1200px;
+    margin:24px auto 0;
+    background:white;
+    border-radius:14px;
+    padding:24px;
+    box-shadow:0 0 12px rgba(0,0,0,.08);
+}
+
+.stat-table table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.stat-table th, .stat-table td{
+    text-align:left;
+    padding:10px 12px;
+    border-bottom:1px solid #eee;
+    font-size:14px;
+}
+
+.stat-table th{
+    color:#0066cc;
+}
+
+@media(max-width:900px){
+    .stat-summary{ grid-template-columns:repeat(2,1fr); }
+    .charts-grid{ grid-template-columns:1fr; }
+}
+h5 {
+  font-size: 18px;
+  color: #333;
+}

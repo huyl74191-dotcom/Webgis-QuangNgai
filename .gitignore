@@ -1,0 +1,15 @@
+
+· GITIGNORE
+# Thư viện cài qua npm — không đưa lên Git (quá nặng, tự cài lại bằng npm install)
+node_modules/
+ 
+# File chứa mật khẩu/thông tin nhạy cảm — TUYỆT ĐỐI không đưa lên Git
+.env
+ 
+# File hệ thống
+.DS_Store
+Thumbs.db
+ 
+# Log
+npm-debug.log*
+ 

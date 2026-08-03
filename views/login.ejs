@@ -1,0 +1,72 @@
+<%- include('partials/header') %>
+
+<main>
+
+<div class="container-fluid mt-3">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-4 col-md-6">
+
+            <div class="card shadow-sm mt-4">
+
+                <div class="card-header bg-primary text-white text-center">
+                    <strong>ĐĂNG NHẬP HỆ THỐNG</strong>
+                </div>
+
+                <div class="card-body p-4">
+
+                    <div id="loginAlert"></div>
+
+                    <form id="loginForm">
+
+                        <div class="mb-3">
+                            <label class="form-label" for="username">
+                                Tên đăng nhập
+                            </label>
+                            <input
+                                type="text"
+                                id="username"
+                                class="form-control"
+                                placeholder="Nhập tên đăng nhập"
+                                autocomplete="username"
+                                required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="password">
+                                Mật khẩu
+                            </label>
+                            <input
+                                type="password"
+                                id="password"
+                                class="form-control"
+                                placeholder="Nhập mật khẩu"
+                                autocomplete="current-password"
+                                required>
+                        </div>
+
+                        <div class="d-grid mb-2">
+                            <button
+                                type="submit"
+                                class="btn btn-primary"
+                                id="btnLogin">
+                                Đăng nhập
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</main>
+
+<%- include('partials/footer') %>

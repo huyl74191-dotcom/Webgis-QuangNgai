@@ -1,0 +1,115 @@
+<%- include('partials/header') %>
+
+<main>
+
+<div class="container-fluid mt-3">
+
+    <div class="row">
+
+        <!-- PANEL ĐIỀU KHIỂN -->
+        <div class="col-lg-3">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header bg-primary text-white">
+                    <strong>CÔNG CỤ QUẢN LÝ BẢN ĐỒ</strong>
+                </div>
+
+                <div class="card-body">
+
+                    <!-- Huyện -->
+                    <h5 class="text-center fw-bold mt-3">Huyện</h5>
+
+                    <select id="district" class="form-select mb-3">
+                        <option value="all">Tất cả huyện</option>
+                    </select>
+
+                    <!-- Loại nguồn nước -->
+                    <h5 class="text-center fw-bold mt-3">Loại nguồn nước</h5>
+
+                    <select id="waterType" class="form-select mb-3">
+                        <option value="all">Tất cả</option>
+                        <option value="song">Sông</option>
+                        <option value="suoi">Suối</option>
+                        <option value="ho">Hồ chứa</option>
+                        <option value="kenh">Kênh</option>
+                        <option value="dam">Đầm</option>
+                        <option value="cuabien">Cửa biển</option>
+                    </select>
+
+                    <!-- Tìm kiếm -->
+                    <h5 class="text-center fw-bold mt-3">Tìm kiếm điểm quan trắc</h5>
+
+                    <input
+                        type="text"
+                        id="searchPoint"
+                        class="form-control mb-3"
+                        placeholder="Ví dụ: NM1">
+
+                    <div class="d-grid mb-3">
+                        <button
+                            class="btn btn-primary"
+                            id="btnReset">
+                            Đặt lại bộ lọc
+                        </button>
+                    </div>
+
+                    <!-- Thống kê -->
+                    <div class="alert alert-info">
+
+                        <h6 class="mb-2">
+                            Thống kê nhanh
+                        </h6>
+
+                        <hr>
+
+                        <b>Tổng số điểm:</b>
+                        <span id="totalPoint">36</span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- BẢN ĐỒ -->
+        <div class="col-lg-9">
+
+            <h5 class="mb-3">
+                BẢN ĐỒ PHÂN BỐ ĐIỂM QUAN TRẮC CHẤT LƯỢNG NƯỚC MẶT
+            </h5>
+
+            <div class="card shadow-sm">
+
+                <div class="card-body p-0">
+
+                    <div id="map"></div>
+
+                </div>
+
+            </div>
+
+            <!-- Tọa độ -->
+            <div class="card mt-2 shadow-sm">
+
+                <div class="card-body py-2">
+
+                    <span id="coordinates">
+                        Kinh độ: -- | Vĩ độ: --
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</main>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,128 @@
+<%- include('partials/header') %>
+
+<main>
+
+<div class="container-fluid mt-3">
+
+    <div class="row">
+
+        <!-- PANEL LỌC -->
+        <div class="col-lg-3">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header bg-primary text-white">
+                    <strong>BỘ LỌC DỮ LIỆU</strong>
+                </div>
+
+                <div class="card-body">
+
+                    <!-- Mã mẫu -->
+                    <label class="form-label">Ký hiệu mẫu</label>
+
+                    <select id="maMau" class="form-select mb-3">
+                        <option value="all">Tất cả điểm</option>
+                    </select>
+
+                    <!-- Đợt quan trắc -->
+                    <label class="form-label">Đợt quan trắc</label>
+
+                    <select id="dot" class="form-select mb-3">
+                        <option value="all">Tất cả đợt</option>
+                        <option value="1">Đợt 1 (Tháng 4/2024)</option>
+                        <option value="2">Đợt 2 (Tháng 7/2024)</option>
+                        <option value="3">Đợt 3 (Tháng 10/2024)</option>
+                    </select>
+
+                    <!-- Từ ngày -->
+                    <label class="form-label">Từ ngày</label>
+                    <input type="date" id="tuNgay" class="form-control mb-3">
+
+                    <!-- Đến ngày -->
+                    <label class="form-label">Đến ngày</label>
+                    <input type="date" id="denNgay" class="form-control mb-3">
+
+                    <div class="d-grid gap-2 mb-3">
+                        <button class="btn btn-primary" id="btnLoc">
+                            Lọc dữ liệu
+                        </button>
+                        <button class="btn btn-outline-secondary" id="btnResetMonitoring">
+                            Đặt lại bộ lọc
+                        </button>
+                    </div>
+
+                    <!-- Thống kê nhanh -->
+                    <div class="alert alert-info mb-0">
+                        <h6 class="mb-2">Thống kê nhanh</h6>
+                        <hr>
+                        <b>Tổng số bản ghi:</b>
+                        <span id="totalRecords">0</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- BẢNG DỮ LIỆU -->
+        <div class="col-lg-9">
+
+            <h5 class="mb-3">
+                DỮ LIỆU CHỈ SỐ QUAN TRẮC CHẤT LƯỢNG NƯỚC MẶT
+            </h5>
+
+            <div id="monitoringAlert"></div>
+
+            <div class="card shadow-sm">
+
+                <div class="card-body p-0">
+
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped mb-0 align-middle" style="font-size:13px;">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Ký hiệu mẫu</th>
+                                    <th>Đợt</th>
+                                    <th>Ngày</th>
+                                    <th>pH</th>
+                                    <th>DO</th>
+                                    <th>BOD5</th>
+                                    <th>COD</th>
+                                    <th>TSS</th>
+                                    <th>Coliform</th>
+                                    <th>Amoni</th>
+                                    <th>Clorua</th>
+                                    <th>Fe</th>
+                                    <th>NO2-</th>
+                                    <th>Tổng dầu</th>
+                                    <th>E.coli</th>
+                                    <th>TOC</th>
+                                    <th>Tổng P</th>
+                                    <th>Tổng N</th>
+                                    <th>Ghi chú</th>
+                                </tr>
+                            </thead>
+                            <tbody id="monitoringTableBody">
+                                <tr>
+                                    <td colspan="19" class="text-center text-muted py-4">
+                                        Đang tải dữ liệu...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</main>
+
+<%- include('partials/footer') %>
