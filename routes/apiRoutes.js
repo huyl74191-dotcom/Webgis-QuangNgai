@@ -79,10 +79,10 @@ router.get('/kiem-tra-dang-nhap', (req, res) => {
 router.get('/chi-so-quan-trac', async (req, res) => {
     try {
         const result = await pool.query(
-            `SELECT id, ma_mau, ngay_quan_trac, dot, ph, do_mgl, bod5, cod, tss, coliform,
+            `SELECT id, ma_mau, nam, ngay_quan_trac, dot, ph, do_mgl, bod5, cod, tss, coliform,
                     amoni, clorua, fe, no2, tong_dau, ecoli, toc, tong_p, tong_n, ghi_chu
              FROM chi_so_quan_trac
-             ORDER BY ngay_quan_trac DESC`
+             ORDER BY nam DESC, dot ASC, ma_mau ASC`
         );
         res.json({ success: true, total: result.rows.length, data: result.rows });
     } catch (err) {
@@ -97,7 +97,7 @@ router.get('/chi-so-quan-trac', async (req, res) => {
 // =====================================================
 
 router.get('/loc', async (req, res) => {
-    const { ma_mau, tu_ngay, den_ngay, dot } = req.query;
+    const { ma_mau, tu_ngay, den_ngay, dot, nam } = req.query;
 
     let sql = 'SELECT * FROM chi_so_quan_trac WHERE 1=1';
     const params = [];
@@ -105,6 +105,10 @@ router.get('/loc', async (req, res) => {
     if (ma_mau) {
         params.push(ma_mau);
         sql += ` AND ma_mau = $${params.length}`;
+    }
+    if (nam) {
+        params.push(nam);
+        sql += ` AND nam = $${params.length}`;
     }
     if (tu_ngay) {
         params.push(tu_ngay);
@@ -119,7 +123,7 @@ router.get('/loc', async (req, res) => {
         sql += ` AND dot = $${params.length}`;
     }
 
-    sql += ' ORDER BY ngay_quan_trac DESC';
+    sql += ' ORDER BY nam DESC, dot ASC, ma_mau ASC';
 
     try {
         const result = await pool.query(sql, params);

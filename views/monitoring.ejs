@@ -24,14 +24,21 @@
                         <option value="all">Tất cả điểm</option>
                     </select>
 
+                    <!-- Năm quan trắc -->
+                    <label class="form-label">Năm quan trắc</label>
+
+                    <select id="nam" class="form-select mb-3">
+                        <option value="all">Tất cả năm</option>
+                    </select>
+
                     <!-- Đợt quan trắc -->
                     <label class="form-label">Đợt quan trắc</label>
 
                     <select id="dot" class="form-select mb-3">
                         <option value="all">Tất cả đợt</option>
-                        <option value="1">Đợt 1 (Tháng 4/2024)</option>
-                        <option value="2">Đợt 2 (Tháng 7/2024)</option>
-                        <option value="3">Đợt 3 (Tháng 10/2024)</option>
+                        <option value="1">Đợt 1</option>
+                        <option value="2">Đợt 2</option>
+                        <option value="3">Đợt 3</option>
                     </select>
 
                     <!-- Từ ngày -->
@@ -83,6 +90,7 @@
                             <thead class="table-light">
                                 <tr>
                                     <th>Ký hiệu mẫu</th>
+                                    <th>Năm</th>
                                     <th>Đợt</th>
                                     <th>Ngày</th>
                                     <th>pH</th>
@@ -105,7 +113,7 @@
                             </thead>
                             <tbody id="monitoringTableBody">
                                 <tr>
-                                    <td colspan="19" class="text-center text-muted py-4">
+                                    <td colspan="20" class="text-center text-muted py-4">
                                         Đang tải dữ liệu...
                                     </td>
                                 </tr>
