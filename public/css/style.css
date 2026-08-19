@@ -9,8 +9,6 @@ body{
     background:#f4f7fa;
 }
 
-
-
 /* ===== NAVBAR ===== */
 .navbar {
   background: #1f2a40;
@@ -363,7 +361,7 @@ body{
 }
 
 .stat-table th{
-    color:#478bcf;
+    color:#0066cc;
 }
 
 @media(max-width:900px){
