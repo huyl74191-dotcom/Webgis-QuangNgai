@@ -9,18 +9,7 @@ body{
     background:#f4f7fa;
 }
 
-/* ============================================
-   HÀNG 1: TOPBAR - tiêu đề hệ thống
-   Giữ nguyên nền xanh #0066cc như header cũ
-============================================ *
 
-/* ===== TOPBAR ===== */
-.topbar {
-  background: linear-gradient(90deg, #4e73df, #6f8dfd);
-  color: white;
-  padding: 15px;
-  text-align: center;
-}
 
 /* ===== NAVBAR ===== */
 .navbar {
@@ -374,7 +363,7 @@ body{
 }
 
 .stat-table th{
-    color:#0066cc;
+    color:#478bcf;
 }
 
 @media(max-width:900px){
