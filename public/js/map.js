@@ -5,8 +5,9 @@ const map = L.map('map').setView([15.12, 108.80], 10);
 
 // Các biến toàn cục
 let boundaryLayer;
+let riverLayer;
 let monitoringLayer;
-let monitoringData;
+let monitoringssData;
 let layerControl;
 
 // =====================================================
@@ -119,12 +120,18 @@ function populateDistrictOptions() {
 }
 
 // =====================================================
-// 3 & 4. Đọc song song file ranh giới tỉnh và file điểm quan trắc
+// 3 & 4. Đọc song song file ranh giới tỉnh, sông suối và điểm quan trắc
+// (dùng allSettled để nếu thiếu file sông suối, các lớp khác vẫn chạy bình thường)
 // =====================================================
-Promise.all([
+Promise.allSettled([
     fetch('/api/ranh-gioi')
         .then(res => {
             if (!res.ok) throw new Error('Lỗi khi tải file ranh giới!');
+            return res.json();
+        }),
+    fetch('/api/song-suoi')
+        .then(res => {
+            if (!res.ok) throw new Error('Lỗi khi tải file sông suối!');
             return res.json();
         }),
     fetch('/api/diem-quan-trac')
@@ -133,36 +140,67 @@ Promise.all([
             return res.json();
         })
 ])
-.then(([boundaryData, pointsData]) => {
+.then(([boundaryResult, riverResult, pointsResult]) => {
+
+    if (pointsResult.status !== "fulfilled") {
+        console.error("Không tải được điểm quan trắc:", pointsResult.reason);
+        return;
+    }
+
+    const overlays = {};
 
     // ---- Ranh giới tỉnh ----
-    boundaryLayer = L.geoJSON(boundaryData, {
-        style: {
-            color: "#0055ff",
-            weight: 2,
-            fillColor: "#6fbf73",
-            fillOpacity: 0.2
-        }
-    }).addTo(map);
+    if (boundaryResult.status === "fulfilled") {
+        boundaryLayer = L.geoJSON(boundaryResult.value, {
+            style: {
+                color: "#0055ff",
+                weight: 2,
+                fillColor: "#6fbf73",
+                fillOpacity: 0.2
+            }
+        }).addTo(map);
 
-    map.fitBounds(boundaryLayer.getBounds());
+        map.fitBounds(boundaryLayer.getBounds());
+        overlays["Ranh giới tỉnh"] = boundaryLayer;
+    } else {
+        console.error("Không tải được ranh giới tỉnh:", boundaryResult.reason);
+    }
+
+    // ---- Sông suối / thủy hệ ----
+    if (riverResult.status === "fulfilled") {
+        riverLayer = L.geoJSON(riverResult.value, {
+            style: {
+                color: "#1e90ff",
+                weight: 2,
+                opacity: 0.85
+            },
+            onEachFeature: function (feature, layer) {
+                const ten = getProp(feature.properties, "name") ||
+                            getProp(feature.properties, "Tên") ||
+                            "Sông/suối";
+                layer.bindPopup(`<b>${ten}</b>`);
+            }
+        }).addTo(map);
+
+        overlays["Sông suối"] = riverLayer;
+    } else {
+        console.warn("Chưa có dữ liệu sông suối (public/data/geojson/song_suoi_quangngai.geojson):", riverResult.reason);
+    }
 
     // ---- Điểm quan trắc ----
     // Lọc bỏ các dòng dữ liệu rỗng (không có geometry/thuộc tính) trong file gốc
     monitoringData = {
         type: "FeatureCollection",
-        features: (pointsData.features || []).filter(f => f.geometry)
+        features: (pointsResult.value.features || []).filter(f => f.geometry)
     };
     monitoringLayer = buildMonitoringLayer(monitoringData).addTo(map);
+    overlays["Điểm quan trắc"] = monitoringLayer;
 
     // ---- Dropdown huyện ----
     populateDistrictOptions();
 
     // ---- Layer control (bật/tắt lớp) ----
-    layerControl = L.control.layers(null, {
-        "Ranh giới tỉnh": boundaryLayer,
-        "Điểm quan trắc": monitoringLayer
-    }, { collapsed: false, position: "topleft" }).addTo(map);
+    layerControl = L.control.layers(null, overlays, { collapsed: false, position: "topleft" }).addTo(map);
 
     styleLayerControl();
 
@@ -221,7 +259,7 @@ legend.onAdd = function () {
                 "></span>
                 Điểm quan trắc
             </div>
-            <div>
+            <div style="margin-bottom:6px;">
                 <span style="
                     display:inline-block;
                     width:20px;
@@ -230,6 +268,16 @@ legend.onAdd = function () {
                     vertical-align:middle;
                 "></span>
                 Ranh giới tỉnh
+            </div>
+            <div>
+                <span style="
+                    display:inline-block;
+                    width:20px;
+                    border-top:3px solid #1e90ff;
+                    margin-right:8px;
+                    vertical-align:middle;
+                "></span>
+                Sông suối
             </div>
         </div>
     `;
