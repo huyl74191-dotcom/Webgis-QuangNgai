@@ -7,7 +7,7 @@ const map = L.map('map').setView([15.12, 108.80], 10);
 let boundaryLayer;
 let riverLayer;
 let monitoringLayer;
-let monitoringssData;
+let monitoringData;
 let layerControl;
 
 // =====================================================
@@ -70,6 +70,68 @@ function buildMonitoringLayer(data) {
     });
 }
 
+// =====================================================
+// Hàm dựng lớp Thủy hệ (sông, suối, kênh, hồ, hồ chứa, đầm...)
+// Style và nhãn khác nhau tuỳ theo loại đối tượng (dựa trên thẻ OSM)
+// =====================================================
+function getWaterStyle(feature) {
+    const props = feature.properties || {};
+    const waterway = props.waterway;
+    const water = props.water;
+    const natural = props.natural;
+    const landuse = props.landuse;
+
+    // Vùng nước tĩnh: hồ chứa -> tô nền
+    if (water === "reservoir" || landuse === "reservoir") {
+        return { color: "#0d6efd", weight: 1, fillColor: "#8ecae6", fillOpacity: 0.5 };
+    }
+    // Hồ tự nhiên -> tô nền
+    if (natural === "water" && water === "lake") {
+        return { color: "#0d6efd", weight: 1, fillColor: "#8ecae6", fillOpacity: 0.5 };
+    }
+    // Đầm / đất ngập nước -> tô nền nhạt hơn
+    if (natural === "wetland" || water === "lagoon") {
+        return { color: "#0d6efd", weight: 1, fillColor: "#a8dadc", fillOpacity: 0.4 };
+    }
+    // Sông: nét đậm
+    if (waterway === "river") {
+        return { color: "#1e90ff", weight: 3, opacity: 0.9 };
+    }
+    // Suối: nét vừa
+    if (waterway === "stream") {
+        return { color: "#1e90ff", weight: 1.5, opacity: 0.75 };
+    }
+    // Kênh, mương, rãnh thoát nước: nét mảnh, đứt đoạn
+    if (waterway === "canal" || waterway === "ditch" || waterway === "drain") {
+        return { color: "#3a86ff", weight: 1.5, opacity: 0.8, dashArray: "4,3" };
+    }
+    // Mặc định (trường hợp khác chưa phân loại)
+    return { color: "#1e90ff", weight: 2, opacity: 0.85 };
+}
+
+function getWaterTypeLabel(props) {
+    if (props.water === "reservoir" || props.landuse === "reservoir") return "Hồ chứa";
+    if (props.natural === "water" && props.water === "lake") return "Hồ";
+    if (props.natural === "wetland" || props.water === "lagoon") return "Đầm";
+    if (props.waterway === "river") return "Sông";
+    if (props.waterway === "stream") return "Suối";
+    if (props.waterway === "canal") return "Kênh";
+    if (props.waterway === "ditch" || props.waterway === "drain") return "Mương/Rãnh thoát nước";
+    return "Thủy hệ";
+}
+
+function buildRiverLayer(data) {
+    return L.geoJSON(data, {
+        style: getWaterStyle,
+        onEachFeature: function (feature, layer) {
+            const props = feature.properties || {};
+            const loai = getWaterTypeLabel(props);
+            const ten = props.name || props["Tên"] || loai;
+            layer.bindPopup(`<b>${ten}</b><br>Loại: ${loai}`);
+        }
+    });
+}
+
 // Style cho Layer Control: nền trong suốt + căn lề checkbox/label thẳng hàng
 function styleLayerControl() {
     const style = document.createElement("style");
@@ -120,8 +182,8 @@ function populateDistrictOptions() {
 }
 
 // =====================================================
-// 3 & 4. Đọc song song file ranh giới tỉnh, sông suối và điểm quan trắc
-// (dùng allSettled để nếu thiếu file sông suối, các lớp khác vẫn chạy bình thường)
+// 3 & 4. Đọc song song file ranh giới tỉnh, thủy hệ và điểm quan trắc
+// (dùng allSettled để nếu thiếu 1 file, các lớp khác vẫn chạy bình thường)
 // =====================================================
 Promise.allSettled([
     fetch('/api/ranh-gioi')
@@ -131,7 +193,7 @@ Promise.allSettled([
         }),
     fetch('/api/song-suoi')
         .then(res => {
-            if (!res.ok) throw new Error('Lỗi khi tải file sông suối!');
+            if (!res.ok) throw new Error('Lỗi khi tải file thủy hệ!');
             return res.json();
         }),
     fetch('/api/diem-quan-trac')
@@ -166,25 +228,12 @@ Promise.allSettled([
         console.error("Không tải được ranh giới tỉnh:", boundaryResult.reason);
     }
 
-    // ---- Sông suối / thủy hệ ----
+    // ---- Thủy hệ (sông, suối, kênh, hồ, hồ chứa, đầm...) ----
     if (riverResult.status === "fulfilled") {
-        riverLayer = L.geoJSON(riverResult.value, {
-            style: {
-                color: "#1e90ff",
-                weight: 2,
-                opacity: 0.85
-            },
-            onEachFeature: function (feature, layer) {
-                const ten = getProp(feature.properties, "name") ||
-                            getProp(feature.properties, "Tên") ||
-                            "Sông/suối";
-                layer.bindPopup(`<b>${ten}</b>`);
-            }
-        }).addTo(map);
-
-        overlays["Sông suối"] = riverLayer;
+        riverLayer = buildRiverLayer(riverResult.value).addTo(map);
+        overlays["Thủy hệ"] = riverLayer;
     } else {
-        console.warn("Chưa có dữ liệu sông suối (public/data/geojson/song_suoi_quangngai.geojson):", riverResult.reason);
+        console.warn("Chưa có dữ liệu thủy hệ:", riverResult.reason);
     }
 
     // ---- Điểm quan trắc ----
@@ -269,7 +318,7 @@ legend.onAdd = function () {
                 "></span>
                 Ranh giới tỉnh
             </div>
-            <div>
+            <div style="margin-bottom:6px;">
                 <span style="
                     display:inline-block;
                     width:20px;
@@ -277,7 +326,19 @@ legend.onAdd = function () {
                     margin-right:8px;
                     vertical-align:middle;
                 "></span>
-                Sông suối
+                Sông / suối / kênh
+            </div>
+            <div>
+                <span style="
+                    display:inline-block;
+                    width:14px;
+                    height:10px;
+                    background:#8ecae6;
+                    border:1px solid #0d6efd;
+                    margin-right:8px;
+                    vertical-align:middle;
+                "></span>
+                Hồ / hồ chứa / đầm
             </div>
         </div>
     `;
