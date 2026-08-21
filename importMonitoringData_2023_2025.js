@@ -135,48 +135,67 @@ const Utils = {
 };
 
 // ============================================================
-// EXCEL READER - AUTO-DETECT HEADER
+// EXCEL READER - AUTO-DETECT HEADER (ROBUST VERSION)
 // ============================================================
+
+/**
+ * Chuẩn hóa tên cột để so sánh: NFC unicode, trim, gộp khoảng trắng,
+ * bỏ dấu xuống dòng ẩn. Xử lý lỗi phổ biến: file "chuẩn Unicode" đôi khi
+ * dùng tổ hợp NFD (ví dụ "đ" = "d" + dấu gạch ngang riêng) trông giống hệt
+ * nhưng khác byte, hoặc có \u00A0 (non-breaking space) thay vì space thường.
+ */
+function normalizeColName(name) {
+  if (name === null || name === undefined) return '';
+  return String(name)
+    .normalize('NFC')
+    .replace(/[\r\n]+/g, ' ')
+    .replace(/\u00A0/g, ' ') // non-breaking space -> space thường
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+const REQUIRED_COLS = ['Mã điểm', 'Năm', 'Đợt'].map(normalizeColName);
 
 class SmartExcelReader {
   constructor(filePath) {
     this.filePath = filePath;
     this.workbook = null;
-    this.headerRowIndex = null;
+    // Lưu header row index RIÊNG cho từng sheet (không giả định giống nhau)
+    this.headerRowBySheet = {};
+    // Lưu bảng map: tên cột chuẩn hóa -> tên cột gốc, riêng cho từng sheet
+    this.colMapBySheet = {};
   }
 
-  /**
-   * Load workbook + auto-detect header row
-   */
   load() {
     console.log(`\n📂 File: ${path.basename(this.filePath)}\n`);
 
     this.workbook = XLSX.readFile(this.filePath, { cellDates: true });
 
-    // Kiểm tra sheet names
     console.log('📋 Sheets:');
     this.workbook.SheetNames.forEach(s => console.log(`   - ${s}`));
 
     const missing = CONFIG.TARGET_SHEETS.filter(s => !this.workbook.Sheets[s]);
     if (missing.length > 0) {
-      throw new Error(`❌ Thiếu sheet: ${missing.join(', ')}`);
+      throw new Error(`❌ Thiếu sheet: ${missing.join(', ')}\n   Sheet thực tế có: ${this.workbook.SheetNames.join(', ')}`);
     }
 
-    // Auto-detect header row
-    this._findHeaderRow();
+    console.log('\n🔍 Tìm header row cho từng sheet...\n');
+    for (const sheetName of CONFIG.TARGET_SHEETS) {
+      this._findHeaderRowForSheet(sheetName);
+    }
   }
 
   /**
-   * Tìm header row từ sheet đầu tiên
+   * Tìm header row cho 1 sheet cụ thể, so khớp theo tên cột đã chuẩn hóa.
+   * Nếu không tìm thấy, in ra chi tiết những gì đã quét được để dễ chẩn đoán.
    */
-  _findHeaderRow() {
-    console.log('\n🔍 Tìm header row...\n');
+  _findHeaderRowForSheet(sheetName) {
+    const sheet = this.workbook.Sheets[sheetName];
+    const scanLog = [];
 
-    const firstSheet = this.workbook.Sheets[CONFIG.TARGET_SHEETS[0]];
-
-    for (let rowIndex = 0; rowIndex <= 15; rowIndex++) {
+    for (let rowIndex = 0; rowIndex <= 20; rowIndex++) {
       try {
-        const rows = XLSX.utils.sheet_to_json(firstSheet, {
+        const rows = XLSX.utils.sheet_to_json(sheet, {
           range: rowIndex,
           defval: null,
           raw: true
@@ -184,68 +203,88 @@ class SmartExcelReader {
 
         if (rows.length === 0) continue;
 
-        const columns = Object.keys(rows[0]);
-        const hasRequiredCols =
-          columns.includes('Mã điểm') &&
-          columns.includes('Năm') &&
-          columns.includes('Đợt');
+        const rawColumns = Object.keys(rows[0]);
+        const normMap = {}; // normalized -> raw
+        rawColumns.forEach(c => { normMap[normalizeColName(c)] = c; });
+        const normColumns = Object.keys(normMap);
 
+        scanLog.push({ rowIndex, columnCount: rawColumns.length, sample: rawColumns.slice(0, 6) });
+
+        const hasRequiredCols = REQUIRED_COLS.every(req => normColumns.includes(req));
         if (!hasRequiredCols) continue;
 
-        const validRecords = rows.filter(
-          r => r['Mã điểm'] && String(r['Mã điểm']).trim()
-        );
-
+        const codeColRaw = normMap['Mã điểm'];
+        const validRecords = rows.filter(r => r[codeColRaw] && String(r[codeColRaw]).trim());
         if (validRecords.length === 0) continue;
 
-        // ✓ Tìm thấy header row
-        this.headerRowIndex = rowIndex;
+        // ✓ Tìm thấy
+        this.headerRowBySheet[sheetName] = rowIndex;
+        this.colMapBySheet[sheetName] = normMap;
 
+        console.log(`   ✓ [${sheetName}] header ở row ${rowIndex}, ${validRecords.length} bản ghi hợp lệ`);
         if (CONFIG.DEBUG) {
-          console.log(`   ✓ Row index: ${rowIndex}`);
-          console.log(`   ✓ Columns (first 8): ${columns.slice(0, 8).join(', ')}`);
-          console.log(`   ✓ Valid records: ${validRecords.length}\n`);
-        } else {
-          console.log(`   ✓ Found at row index ${rowIndex}\n`);
+          console.log(`      Cột: ${rawColumns.slice(0, 8).join(', ')}`);
         }
-
         return;
       } catch (e) {
-        // Skip, try next row
+        // thử dòng tiếp theo
       }
     }
 
+    // Không tìm thấy -> in chi tiết chẩn đoán ngay tại đây, không cần chạy debug riêng
+    console.log(`\n❌ [${sheetName}] Không tìm thấy header row.`);
+    console.log(`   Đang tìm các cột (chuẩn hóa): ${REQUIRED_COLS.join(', ')}`);
+    console.log(`   Các dòng đã quét (0-20), tên cột thấy được:\n`);
+    scanLog.forEach(s => {
+      console.log(`   Row ${s.rowIndex} (${s.columnCount} cột): ${s.sample.map(c => JSON.stringify(c)).join(', ')}`);
+    });
     throw new Error(
-      '❌ Cannot find header row with columns: "Mã điểm", "Năm", "Đợt"\n' +
-      'Run with --debug flag: node importMonitoringData_2023_2025_FIXED.js --debug'
+      `❌ [${sheetName}] Cannot find header row with columns: "Mã điểm", "Năm", "Đợt"\n` +
+      `   -> So sánh danh sách cột ở trên với tên đang tìm. Lệch ở khoảng trắng/dấu là nguyên nhân phổ biến nhất.`
     );
   }
 
   /**
-   * Đọc dữ liệu từ tất cả sheets
+   * Đọc dữ liệu từ tất cả sheets, dùng header row + colMap riêng cho từng sheet
    */
   read() {
-    if (this.headerRowIndex === null) {
-      throw new Error('❌ Header row not detected. Call load() first.');
-    }
-
     const allRecords = [];
 
-    console.log('📊 Reading data:\n');
+    console.log('\n📊 Reading data:\n');
 
     for (const sheetName of CONFIG.TARGET_SHEETS) {
       const worksheet = this.workbook.Sheets[sheetName];
+      const headerRowIndex = this.headerRowBySheet[sheetName];
+      const colMap = this.colMapBySheet[sheetName]; // normalized -> raw
+
       const rows = XLSX.utils.sheet_to_json(worksheet, {
-        range: this.headerRowIndex,
+        range: headerRowIndex,
         defval: null,
         raw: true
       });
 
-      const validRows = rows
-        .filter(row => row['Mã điểm'] && String(row['Mã điểm']).trim())
-        .map(row => ({ ...row, __sheet: sheetName }));
+      const codeColRaw = colMap['Mã điểm'];
+      const namColRaw = colMap['Năm'];
+      const dotColRaw = colMap['Đợt'];
 
-      console.log(`   ✓ ${sheetName}: ${validRows.length} records`);
+      const validRows = rows
+        .filter(row => row[codeColRaw] && String(row[codeColRaw]).trim())
+        .map(row => {
+          // Chuẩn hóa lại object thành key chuẩn ('Mã điểm', 'Năm', 'Đợt', ...)
+          // để phần transformRecord() phía dưới dùng được key cố định,
+          // bất kể tên cột gốc trong Excel viết khác thế nào.
+          const normalizedRow = { __sheet: sheetName };
+          for (const [rawKey, val] of Object.entries(row)) {
+            normalizedRow[normalizeColName(rawKey)] = val;
+          }
+          // Đảm bảo 3 cột bắt buộc luôn map đúng
+          normalizedRow['Mã điểm'] = row[codeColRaw];
+          normalizedRow['Năm'] = row[namColRaw];
+          normalizedRow['Đợt'] = row[dotColRaw];
+          return normalizedRow;
+        });
+
+      console.log(`   ✓ ${sheetName}: ${validRows.length} records (header row ${headerRowIndex})`);
       allRecords.push(...validRows);
     }
 
@@ -392,6 +431,12 @@ async function runImport() {
   const excelPath = path.join(__dirname, excelFiles[0]);
 
   // Read Excel
+  console.log(`\n✓ Sẽ đọc file: ${excelFiles[0]}`);
+  if (excelFiles.length > 1) {
+    console.log(`⚠️  Cảnh báo: có ${excelFiles.length} file .xlsx trong thư mục, đang dùng file đầu tiên (alphabet): ${excelFiles[0]}`);
+    console.log(`   Các file khác: ${excelFiles.slice(1).join(', ')}\n`);
+  }
+
   const reader = new SmartExcelReader(excelPath);
   reader.load();
 
