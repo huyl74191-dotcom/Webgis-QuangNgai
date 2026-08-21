@@ -205,4 +205,16 @@ router.get('/diem-quan-trac', (req, res) => {
     });
 });
 
+// GET /api/song-suoi — trả GeoJSON mạng lưới sông suối
+router.get('/song-suoi', (req, res) => {
+    const filePath = path.join(__dirname, '..', 'public', 'data', 'geojson', 'song_suoi_quangngai.geojson');
+
+    fs.readFile(filePath, 'utf8', (err, data) => {
+        if (err) {
+            return res.status(500).json({ success: false, error: 'Không đọc được file sông suối' });
+        }
+        res.type('application/json').send(data);
+    });
+});
+
 module.exports = router;
