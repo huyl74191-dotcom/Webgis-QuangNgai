@@ -454,3 +454,10 @@ function updateStatistics() {
     document.getElementById("totalPoint").textContent =
         monitoringLayer.getLayers().length;
 }
+// Khoá API miễn phí của CARTO (xin tại carto.com/basemaps/apikey)
+const CARTO_KEY = "DAN_KEY_CUA_BAN_VAO_DAY";
+
+L.tileLayer('https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=' + CARTO_KEY, {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    maxZoom: 19
+}).addTo(map);
