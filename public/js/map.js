@@ -40,11 +40,10 @@ function getHuyen(properties) {
 // =====================================================
 // 2. Thêm lớp bản đồ nền OpenStreetMap
 // =====================================================
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors',
+L.tileLayer('https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
     maxZoom: 19
 }).addTo(map);
-
 // =====================================================
 // Hàm dựng lớp điểm quan trắc từ dữ liệu GeoJSON
 // =====================================================
