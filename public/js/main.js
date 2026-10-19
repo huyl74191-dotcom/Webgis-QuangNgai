@@ -63,3 +63,4 @@ map.on("mousemove", function (e) {
 map.on("mouseout", function () {
     document.getElementById("coordinates").innerHTML = "Kinh độ: -- | Vĩ độ: --";
 });
+   <script src="/js/map.js"></script>
