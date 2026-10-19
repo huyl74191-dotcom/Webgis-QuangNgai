@@ -8,6 +8,9 @@
     <script src="/js/nav-toggle.js"></script>
 
     <!-- JavaScript theo từng trang -->
+    <% (typeof sharedScripts !== 'undefined' ? sharedScripts : []).forEach(function (s) { %>
+        <script src="/js/<%= s %>"></script>
+    <% }) %>
     <% if (typeof pageScript !== 'undefined') { %>
         <script src="/js/<%= pageScript %>"></script>
     <% } %>

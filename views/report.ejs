@@ -82,20 +82,42 @@
                     </div>
                     <div class="stat-box">
                         <div class="stat-number text-success" id="sumPass">--</div>
-                        <div class="stat-label">Đạt chuẩn</div>
+                        <div class="stat-label">Mẫu đạt tất cả chỉ tiêu</div>
                     </div>
                     <div class="stat-box">
                         <div class="stat-number text-danger" id="sumFail">--</div>
-                        <div class="stat-label">Vượt ngưỡng</div>
+                        <div class="stat-label">Mẫu có ít nhất 1 chỉ tiêu vượt</div>
                     </div>
                     <div class="stat-box">
                         <div class="stat-number" id="sumRate">--</div>
-                        <div class="stat-label">Tỉ lệ đạt chuẩn</div>
+                        <div class="stat-label">Tỷ lệ mẫu đạt tất cả chỉ tiêu</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number text-danger" id="sumViolations">--</div>
+                        <div class="stat-label">Tổng lượt chỉ tiêu vượt</div>
                     </div>
                 </div>
 
                 <div class="alert alert-secondary" id="reportConclusion" style="font-size:14px;"></div>
 
+                <!-- TỶ LỆ VƯỢT THEO TỪNG CHỈ TIÊU -->
+                <div class="card shadow-sm mb-3">
+                    <div class="card-header py-2"><strong>Tỷ lệ vượt ngưỡng theo từng chỉ tiêu</strong></div>
+                    <div class="card-body p-0">
+                        <table class="table table-sm mb-0" style="font-size:13px;">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Chỉ tiêu</th>
+                                    <th class="text-end">Mẫu vượt / mẫu có đo</th>
+                                    <th class="text-end">Tỷ lệ vượt</th>
+                                </tr>
+                            </thead>
+                            <tbody id="paramRateBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- BẢNG DỮ LIỆU -->
                 <div class="card shadow-sm">
                     <div class="card-body p-0">
                         <div class="table-responsive">
@@ -111,7 +133,7 @@
                                         <th>COD</th>
                                         <th>TSS</th>
                                         <th>Coliform</th>
-                                        <th>Trạng thái</th>
+                                        <th style="min-width:180px;">Trạng thái / chỉ tiêu vượt</th>
                                     </tr>
                                 </thead>
                                 <tbody id="reportTableBody">
@@ -123,7 +145,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
 
         </div>

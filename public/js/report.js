@@ -1,16 +1,8 @@
 // =====================================================
 // TRANG BÁO CÁO — Lọc dữ liệu, đánh giá QCVN, xuất Excel / in
+// Quy tắc đánh giá lấy từ water-quality-rules.js (window.WQ),
+// dùng chung với trang Cảnh báo.
 // =====================================================
-
-// Ngưỡng B1 (dùng chung logic với trang cảnh báo, thu gọn 6 chỉ tiêu chính để hiển thị báo cáo)
-const QCVN08_B1 = {
-    ph: { min: 5.5, max: 9 },
-    bod5: { max: 15 },
-    cod: { max: 30 },
-    do_mgl: { min: 4 },
-    tss: { max: 50 },
-    coliform: { max: 7500 }
-};
 
 const tableBody = document.getElementById("reportTableBody");
 const alertBox = document.getElementById("reportAlert");
@@ -27,16 +19,9 @@ function showAlert(message, type = "danger") {
 function clearAlert() {
     alertBox.innerHTML = "";
 }
-
-function isExceeded(record) {
-    return Object.keys(QCVN08_B1).some(function (key) {
-        const rule = QCVN08_B1[key];
-        const value = parseFloat(record[key]);
-        if (isNaN(value)) return false;
-        if (rule.min !== undefined && value < rule.min) return true;
-        if (rule.max !== undefined && value > rule.max) return true;
-        return false;
-    });
+function setText(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value;
 }
 
 function renderTable(records) {
@@ -62,10 +47,17 @@ function renderTable(records) {
         const ngay = r.ngay_quan_trac
             ? new Date(r.ngay_quan_trac).toLocaleDateString("vi-VN")
             : "--";
-        const exceeded = isExceeded(r);
+        const result = WQ.evaluateRecord(r);
+
+        // Ô trạng thái: huy hiệu + liệt kê chỉ tiêu vượt
+        // (vì bảng chỉ hiện 6 cột, nhưng đánh giá xét đủ 12 chỉ tiêu)
+        const statusCell = result.isExceeded
+            ? `<span class="badge bg-danger">Vượt ngưỡng</span>
+               <div class="small text-danger mt-1">${result.violations.map(v => v.text).join("<br>")}</div>`
+            : '<span class="badge bg-success">Đạt chuẩn</span>';
 
         return `
-            <tr class="${exceeded ? 'table-danger' : ''}">
+            <tr class="${result.isExceeded ? 'table-danger' : ''}">
                 <td><b>${r.ma_mau ?? "--"}</b></td>
                 <td>${r.dot ?? "--"}</td>
                 <td>${ngay}</td>
@@ -75,9 +67,7 @@ function renderTable(records) {
                 <td>${r.cod ?? "--"}</td>
                 <td>${r.tss ?? "--"}</td>
                 <td>${r.coliform ?? "--"}</td>
-                <td>${exceeded
-                    ? '<span class="badge bg-danger">Vượt ngưỡng</span>'
-                    : '<span class="badge bg-success">Đạt chuẩn</span>'}</td>
+                <td>${statusCell}</td>
             </tr>
         `;
     }).join("");
@@ -89,32 +79,56 @@ function renderTable(records) {
 // Tóm tắt đánh giá + câu kết luận tự động
 // -----------------------------------------------------
 function renderSummary(records) {
-    const total = records.length;
-    const failCount = records.filter(isExceeded).length;
-    const passCount = total - failCount;
-    const passRate = total ? ((passCount / total) * 100).toFixed(1) : "0.0";
-    const failRate = total ? ((failCount / total) * 100).toFixed(1) : "0.0";
+    const s = WQ.summarize(records);
 
-    document.getElementById("sumTotal").textContent = total;
-    document.getElementById("sumPass").textContent = passCount;
-    document.getElementById("sumFail").textContent = failCount;
-    document.getElementById("sumRate").textContent = total ? passRate + "%" : "--";
+    setText("sumTotal", s.totalSamples);
+    setText("sumPass", s.passedSamples);
+    setText("sumFail", s.exceededSamples);
+    setText("sumRate", s.totalSamples ? WQ.fmtPercent(s.passedRate) : "--");
+
+    // Các phần tử tùy chọn (chỉ cập nhật nếu Huy đã thêm vào report.ejs)
+    setText("sumViolations", s.totalViolations);
+    setText("sumFailRate", s.totalSamples ? WQ.fmtPercent(s.exceededRate) : "--");
+
+    const paramBody = document.getElementById("paramRateBody");
+    if (paramBody) {
+        paramBody.innerHTML = Object.values(s.byParameter)
+            .filter(p => p.measured > 0)
+            .sort((a, b) => b.rate - a.rate)
+            .map(p => `
+                <tr>
+                    <td>${p.label}</td>
+                    <td class="text-end">${p.exceeded}/${p.measured}</td>
+                    <td class="text-end">${WQ.fmtPercent(p.rate)}</td>
+                </tr>`)
+            .join("");
+    }
 
     const conclusionBox = document.getElementById("reportConclusion");
 
-    if (total === 0) {
+    if (s.totalSamples === 0) {
         conclusionBox.textContent = "Không có dữ liệu phù hợp với bộ lọc hiện tại để đánh giá.";
         return;
     }
 
-    if (failCount === 0) {
+    if (s.exceededSamples === 0) {
         conclusionBox.innerHTML =
-            `<b>Kết luận:</b> Toàn bộ ${total} mẫu quan trắc đều đạt chuẩn theo QCVN 08-MT:2015/BTNMT (cột B1).`;
-    } else {
-        conclusionBox.innerHTML =
-            `<b>Kết luận:</b> Trong tổng số ${total} mẫu quan trắc, có <b>${failCount} mẫu (${failRate}%)</b> ` +
-            `vượt ngưỡng cho phép theo QCVN 08-MT:2015/BTNMT (cột B1), cần lưu ý theo dõi và có biện pháp xử lý phù hợp.`;
+            `<b>Kết luận:</b> Toàn bộ ${s.totalSamples} mẫu quan trắc đều đạt QCVN 08-MT:2015/BTNMT (cột B1) ở tất cả chỉ tiêu được đo.`;
+        return;
     }
+
+    // Chỉ tiêu vượt nhiều nhất
+    const worst = Object.values(s.byParameter)
+        .filter(p => p.exceeded > 0)
+        .sort((a, b) => b.rate - a.rate)[0];
+
+    conclusionBox.innerHTML =
+        `<b>Kết luận:</b> Trong tổng số ${s.totalSamples} mẫu quan trắc, có ` +
+        `<b>${s.passedSamples} mẫu (${WQ.fmtPercent(s.passedRate)})</b> đạt QCVN 08-MT:2015/BTNMT (cột B1) ở tất cả chỉ tiêu; ` +
+        `<b>${s.exceededSamples} mẫu (${WQ.fmtPercent(s.exceededRate)})</b> có ít nhất một chỉ tiêu vượt ngưỡng ` +
+        `(tổng cộng ${s.totalViolations} lượt chỉ tiêu vượt). ` +
+        `Chỉ tiêu vượt nhiều nhất là <b>${worst.label}</b> (${worst.exceeded}/${worst.measured} mẫu, ${WQ.fmtPercent(worst.rate)}). ` +
+        `Cần lưu ý theo dõi và có biện pháp xử lý phù hợp.`;
 }
 
 // -----------------------------------------------------
@@ -223,6 +237,7 @@ document.getElementById("btnExportExcel").addEventListener("click", function () 
     }
 
     const rows = currentRecords.map(function (r) {
+        const result = WQ.evaluateRecord(r);
         return {
             "Ký hiệu mẫu": r.ma_mau,
             "Đợt": r.dot,
@@ -244,7 +259,8 @@ document.getElementById("btnExportExcel").addEventListener("click", function () 
             "TOC (mg/l)": r.toc,
             "Tổng P (mg/l)": r.tong_p,
             "Tổng N (mg/l)": r.tong_n,
-            "Trạng thái": isExceeded(r) ? "Vượt ngưỡng" : "Đạt chuẩn",
+            "Trạng thái": result.isExceeded ? "Vượt ngưỡng" : "Đạt chuẩn",
+            "Chỉ tiêu vượt ngưỡng": result.violations.map(v => v.text).join("; "),
             "Ghi chú": r.ghi_chu
         };
     });
