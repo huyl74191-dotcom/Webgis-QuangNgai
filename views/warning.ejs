@@ -9,39 +9,82 @@
         <!-- PANEL THÔNG TIN QUY CHUẨN -->
         <div class="col-lg-3">
 
-            <div class="card shadow-sm">
+            <div class="card shadow-sm mb-3">
 
-                <div class="card-header bg-danger text-white">
-                    <strong>NGƯỠNG CẢNH BÁO (QCVN 08-MT:2015/BTNMT, cột B1)</strong>
+                <div class="card-header bg-danger text-white text-center">
+                    <strong>NGƯỠNG CẢNH BÁO<br>(QCVN 08:2023/BTNMT)</strong>
                 </div>
 
                 <div class="card-body">
-                    <table class="table table-sm mb-0">
+
+                    <div class="small text-muted mb-1">Bảng 1: giới hạn bảo vệ sức khỏe con người</div>
+                    <table class="table table-sm mb-3" style="font-size:13px;">
                         <tbody>
-                            <tr><td>pH</td><td class="text-end">5,5 – 9</td></tr>
-                            <tr><td>BOD5</td><td class="text-end">≤ 15 mg/l</td></tr>
-                            <tr><td>COD</td><td class="text-end">≤ 30 mg/l</td></tr>
-                            <tr><td>DO</td><td class="text-end">≥ 4 mg/l</td></tr>
-                            <tr><td>TSS</td><td class="text-end">≤ 50 mg/l</td></tr>
-                            <tr><td>Coliform</td><td class="text-end">≤ 7.500 MPN/100ml</td></tr>
-                            <tr><td>Amoni</td><td class="text-end">≤ 0,9 mg/l</td></tr>
-                            <tr><td>Clorua</td><td class="text-end">≤ 350 mg/l</td></tr>
-                            <tr><td>Nitrit (NO2-)</td><td class="text-end">≤ 0,05 mg/l</td></tr>
-                            <tr><td>Sắt (Fe)</td><td class="text-end">≤ 1,5 mg/l</td></tr>
-                            <tr><td>Tổng dầu mỡ</td><td class="text-end">≤ 1 mg/l</td></tr>
-                            <tr><td>E.coli</td><td class="text-end">≤ 100 MPN/100ml</td></tr>
+                            <tr><td>Nitrit (NO2-)</td><td class="text-end">≤ 0,05 mg/L</td></tr>
+                            <tr><td>Amoni</td><td class="text-end">≤ 0,3 mg/L</td></tr>
+                            <tr><td>Clorua</td><td class="text-end">≤ 250 mg/L</td></tr>
+                            <tr><td>Sắt (Fe)</td><td class="text-end">≤ 0,5 mg/L</td></tr>
+                            <tr><td>Tổng dầu mỡ</td><td class="text-end">≤ 5 mg/L</td></tr>
+                            <tr><td>E.coli</td><td class="text-end">≤ 20 MPN/100ml</td></tr>
                         </tbody>
                     </table>
+
+                    <div class="small text-muted mb-1">Bảng 2 (sông, suối, kênh) · mục tiêu mức B</div>
+                    <table class="table table-sm mb-2" style="font-size:13px;">
+                        <tbody>
+                            <tr><td>pH</td><td class="text-end">6,0 – 8,5</td></tr>
+                            <tr><td>BOD5</td><td class="text-end">≤ 6 mg/L</td></tr>
+                            <tr><td>COD</td><td class="text-end">≤ 15 mg/L</td></tr>
+                            <tr><td>TSS</td><td class="text-end">≤ 100 mg/L</td></tr>
+                            <tr><td>DO</td><td class="text-end">≥ 5 mg/L</td></tr>
+                            <tr><td>Tổng P</td><td class="text-end">≤ 0,3 mg/L</td></tr>
+                            <tr><td>Tổng N</td><td class="text-end">≤ 1,5 mg/L</td></tr>
+                            <tr><td>Coliform</td><td class="text-end">≤ 5.000 MPN/100ml</td></tr>
+                        </tbody>
+                    </table>
+
+                    <div class="small text-muted">
+                        Hồ chứa, đầm áp dụng Bảng 3 (TSS mức B ≤ 15 mg/L).
+                        Cửa biển: dùng TOC thay COD, kết quả chỉ mang tính tham khảo.
+                    </div>
+
                 </div>
 
             </div>
 
-            <div class="alert alert-warning mt-3">
-                <h6 class="mb-2">Thống kê nhanh</h6>
-                <hr>
-                <b>Tổng số bản ghi:</b> <span id="totalChecked">0</span><br>
-                <b>Số bản ghi vượt ngưỡng:</b>
-                <span id="totalExceeded" class="text-danger fw-bold">0</span>
+            <!-- THỐNG KÊ NHANH -->
+            <div class="card shadow-sm" style="background:#fff8e1;">
+                <div class="card-body" style="font-size:14px;">
+
+                    <div class="mb-2 text-muted">Thống kê nhanh</div>
+
+                    <div>Tổng số mẫu: <b id="totalChecked">0</b></div>
+                    <div>Số mẫu có ít nhất 1 chỉ tiêu vượt:
+                        <b class="text-danger" id="totalExceeded">0</b>
+                        (<span id="exceededRate">0%</span>)
+                    </div>
+                    <div>Tỷ lệ mẫu đạt tất cả chỉ tiêu: <b id="passedRate">0%</b></div>
+                    <div>Tổng số lượt chỉ tiêu vượt: <b id="totalViolations">0</b></div>
+                    <div>Mẫu vượt giới hạn sức khỏe (Bảng 1): <b id="healthFailSamples">0</b></div>
+                    <div>Mức xấu nhất theo Bảng 2/3:
+                        A <b id="levelA">0</b> ·
+                        B <b id="levelB">0</b> ·
+                        C <b id="levelC">0</b> ·
+                        D <b id="levelD">0</b>
+                    </div>
+
+                    <table class="table table-sm mt-3 mb-0" style="font-size:13px;">
+                        <thead>
+                            <tr>
+                                <th>Chỉ tiêu</th>
+                                <th class="text-end">Mẫu vượt</th>
+                                <th class="text-end">Tỷ lệ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paramRateBody"></tbody>
+                    </table>
+
+                </div>
             </div>
 
         </div>
@@ -50,7 +93,7 @@
         <div class="col-lg-9">
 
             <h5 class="mb-3">
-                CẢNH BÁO CHẤT LƯỢNG NƯỚC VƯỢT NGƯỠNG QCVN 08-MT:2015/BTNMT
+                CẢNH BÁO CHẤT LƯỢNG NƯỚC VƯỢT NGƯỠNG QCVN 08:2023/BTNMT
             </h5>
 
             <div id="warningAlert"></div>
